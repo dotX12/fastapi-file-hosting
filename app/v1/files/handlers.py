@@ -1,12 +1,12 @@
 from typing import List
 from uuid import UUID
 
-from fastapi import File, UploadFile, APIRouter, Form, Depends
+from fastapi import APIRouter, Depends
 from pydantic import Field
-from starlette.responses import JSONResponse, FileResponse
+from starlette.responses import FileResponse
 
-from app.v1.files.dependencies import FileDependencyMarker
 from app.v1.files.crud import FileRepository
+from app.v1.files.dependencies import FileDependencyMarker
 from app.v1.files.schemas import GetFileModel, PostFormModel
 from app.v1.files.services import FileService
 
@@ -34,13 +34,13 @@ async def create_upload_file(
     )
 
 
-@files_router.get("/files/{file_uuid}/info", response_model=GetFileModel)
+@files_router.get("/files/{uuid}/info", response_model=GetFileModel)
 async def get_file_info(
-        file_uuid: UUID = Field(alias="uuid"),
+        uuid: UUID,
         db: FileRepository = Depends(FileDependencyMarker),
         file_service: FileService = Depends(),
 ):
-    result = await db.get_upload_file(uuid=file_uuid)
+    result = await db.get_upload_file(uuid=uuid)
     return file_service.generate_response_model(
         uuid=result.uuid,
         original_name=result.original_name,
@@ -71,12 +71,12 @@ async def get_files_info(
     ]
 
 
-@files_router.get("/files/{file_uuid}")
+@files_router.get("/files/{uuid}")
 async def get_file(
-        file_uuid: UUID = Field(alias="uuid"),
+        uuid: UUID,
         db: FileRepository = Depends(FileDependencyMarker),
         file_service: FileService = Depends(),
 ):
-    file_db = await db.get_upload_file(uuid=file_uuid)
+    file_db = await db.get_upload_file(uuid=uuid)
     file_path = file_service.file_path_from_security_name(file_db.security_name)
     return FileResponse(path=file_path, filename=file_db.original_name)
