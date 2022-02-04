@@ -13,7 +13,7 @@ from app.v1.files.services import FileService
 files_router = APIRouter()
 
 
-@files_router.post("/files")
+@files_router.post("/files", response_model=GetFileModel)
 async def create_upload_file(
         data: PostFormModel = Depends(),
         db: FileRepository = Depends(FileDependencyMarker),
@@ -21,9 +21,17 @@ async def create_upload_file(
 ):
     file_expire_time = file_service.generate_delete_file_date(hours=data.ttl)
     upload_file = await db.create_upload_file(upload_file=data.file, expire_time=file_expire_time)
+    created_file = await db.get_upload_file(uuid=upload_file.uuid)
 
-    data = {"detail": "File created", "uuid": str(upload_file.uuid)}
-    return JSONResponse(status_code=201, content=data)
+    return file_service.generate_response_model(
+        uuid=created_file.uuid,
+        original_name=created_file.original_name,
+        size_bytes=created_file.size_bytes,
+        deleted_at=created_file.deleted_at,
+        status=created_file.status,
+        created_at=created_file.created_at,
+        mime_type=created_file.mime_type,
+    )
 
 
 @files_router.get("/files/{file_uuid}/info", response_model=GetFileModel)
