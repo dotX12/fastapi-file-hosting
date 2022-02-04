@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Numeric, DateTime
+from sqlalchemy import Column, String, Numeric, DateTime, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql.functions import current_timestamp
 
@@ -10,7 +10,7 @@ class TimestampMixin(object):
     updated_at = Column(DateTime, onupdate=current_timestamp())
 
 
-class UploadFile(TimestampMixin, Base):
+class FileModel(Base, TimestampMixin):
     __tablename__ = "files"
 
     uuid = Column(UUID(as_uuid=True), primary_key=True)
@@ -19,3 +19,4 @@ class UploadFile(TimestampMixin, Base):
     size_bytes = Column(Numeric)
     mime_type = Column(String(255))
     deleted_at = Column(DateTime)
+    status = Column(Boolean, default=1)
