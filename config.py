@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     DB_HOST: str = Field(env='DB_HOST')
     DB_BASENAME: str = Field(env='DB_BASENAME')
 
+    HOSTING_URL: str = Field(env='HOSTING_URL')
+
     @property
     def dsn(self):
         return (
