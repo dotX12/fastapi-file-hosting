@@ -1,6 +1,6 @@
-# FileHosting
-FastAPI file hosting
+# FastAPI file hosting
 
+### You can see how the requests look before deploying this application to yourself.
 <details> 
 <summary>
 File creation
