@@ -48,7 +48,7 @@ class BaseCRUD(ABC):
     async def get_one(self, *args) -> Model:
         async with self.session as transaction:
             stmt = select(self.model).where(*args)
-            result = await transaction.execute(stmt)
+            result = await self.session.execute(stmt)
             return result.scalar_one()
 
     async def get_many(self, *args: Any) -> Model:
